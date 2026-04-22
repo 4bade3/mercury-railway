@@ -26,7 +26,7 @@ This template deploys Mercury as a Railway worker service backed by a persistent
 Click the button above, or use this URL:
 
 ```
-https://railway.com/new/template?template=https://github.com/4bade3/mercury-railway
+https://railway.com/deploy/kJGxP-?referralCode=u71AUL&utm_medium=integration&utm_source=template&utm_campaign=generic
 ```
 
 Railway will prompt you to fill in the required environment variables before deploying.
