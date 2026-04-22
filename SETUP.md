@@ -30,16 +30,27 @@ Railway will redeploy automatically.
 
 ## Step 3: Pair Telegram
 
-1. Open Telegram and message your bot with `/start`
-2. The bot will reply with a **pairing code** (e.g. `ABCD-1234`)
-3. In Railway → your Mercury service → **Deploy** tab → click the shell icon (or use Railway CLI: `railway shell`)
-4. Run:
-   ```sh
-   mercury telegram approve ABCD-1234
-   ```
-5. You are now the first admin. You can talk to Mercury through Telegram.
+### Option A — No shell (recommended on Railway)
 
-To add other users: have them message `/start` to your bot, then approve from the shell with `mercury telegram approve <their-code>`.
+1. Get your numeric **Telegram user id** (e.g. message [@userinfobot](https://t.me/userinfobot) and copy `Id`).
+2. In Railway → your Mercury service → **Variables**, add:
+   - `TELEGRAM_BOOTSTRAP_ADMIN_ID` = that number (digits only)
+3. Redeploy (or restart) the service once so the entrypoint can write `mercury.yaml`.
+4. Open Telegram and message your bot with `/start`. You should be able to chat immediately.
+
+After you are in, **remove** `TELEGRAM_BOOTSTRAP_ADMIN_ID` from Railway variables if you like (the admin is already stored on the volume; the variable is only used when there are zero Telegram admins).
+
+**Adding more users (still no shell):** have them send `/start`. Existing Telegram **admins** get a DM with **Approve** / **Reject** buttons — tap Approve.
+
+### Option B — Railway Shell (pairing code)
+
+1. Message your bot with `/start`
+2. The bot replies with a **pairing code** (six digits)
+3. Railway → your service → **Deploy** → **Shell** (or local [Railway CLI](https://docs.railway.com/guides/cli): `railway shell`)
+4. Run: `mercury telegram approve <pairing-code>`
+5. You are the first admin.
+
+If admins already exist and you must approve from the shell, use the numeric user id: `mercury telegram approve 123456789` (not a pairing code).
 
 ---
 

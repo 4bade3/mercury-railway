@@ -4,6 +4,11 @@
 # ─────────────────────────────────────────────────────────
 FROM node:20-alpine
 
+WORKDIR /opt/mercury-railway-bootstrap
+COPY scripts/package.json package.json
+COPY scripts/telegram-bootstrap.mjs ./
+RUN npm install --omit=dev
+
 WORKDIR /app
 
 # Pin a specific version for reproducibility, or use "latest"

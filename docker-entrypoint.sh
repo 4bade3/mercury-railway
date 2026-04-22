@@ -64,6 +64,10 @@ write_env "GROK_MODEL"             "${GROK_MODEL:-grok-4}"
 write_env "OLLAMA_LOCAL_ENABLED"   "${OLLAMA_LOCAL_ENABLED:-false}"
 
 write_env "TELEGRAM_BOT_TOKEN"     "${TELEGRAM_BOT_TOKEN:-}"
+# Mercury defaults TELEGRAM_ENABLED=false; turn Telegram on when a token is set (Railway is headless).
+if [ -n "${TELEGRAM_BOT_TOKEN:-}" ]; then
+  write_env "TELEGRAM_ENABLED" "true"
+fi
 
 write_env "DAILY_TOKEN_BUDGET"     "${DAILY_TOKEN_BUDGET:-50000}"
 write_env "HEARTBEAT_INTERVAL_MINUTES" "${HEARTBEAT_INTERVAL_MINUTES:-60}"
@@ -78,6 +82,12 @@ write_env "MEMORY_DIR"             "${MEMORY_DIR:-/data/mercury/memory}"
 
 echo "☿  Mercury entrypoint: data dir ready at $MERCURY_DIR"
 echo "☿  Provider: ${DEFAULT_PROVIDER:-anthropic}"
+
+# Optional CLI-less first Telegram admin (numeric user id, e.g. from @userinfobot).
+if [ -n "${TELEGRAM_BOOTSTRAP_ADMIN_ID:-}" ]; then
+  node /opt/mercury-railway-bootstrap/telegram-bootstrap.mjs
+fi
+
 echo "☿  Starting agent..."
 
 exec "$@"

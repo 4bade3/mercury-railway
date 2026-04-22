@@ -59,6 +59,7 @@ Railway will prompt you to fill in the required environment variables before dep
 | `GITHUB_EMAIL` | — | Email for commit co-authoring |
 | `GITHUB_DEFAULT_OWNER` | — | Default repo owner |
 | `GITHUB_DEFAULT_REPO` | — | Default repo name |
+| `TELEGRAM_BOOTSTRAP_ADMIN_ID` | — | **CLI-less pairing:** your numeric Telegram user id; seeds the first admin on boot when `mercury.yaml` has no Telegram admins yet ([details below](#telegram-without-a-shell)) |
 
 ---
 
@@ -103,16 +104,8 @@ In your Railway project, right-click the Mercury service → **Attach Volume** �
 
 1. Message [@BotFather](https://t.me/BotFather) on Telegram → `/newbot` → copy the token
 2. Set `TELEGRAM_BOT_TOKEN` in Railway → redeploy
-3. Message `/start` to your bot on Telegram
-4. You'll receive a pairing code in the bot response
-5. In Railway → your service → **Railway Shell** (or via logs), run:
-   ```
-   mercury telegram approve <your-pairing-code>
-   ```
-   Or approve directly via the Railway shell:
-   ```sh
-   node dist/index.js telegram approve <code>
-   ```
+3. **Without a shell:** set `TELEGRAM_BOOTSTRAP_ADMIN_ID` to your numeric Telegram user id (e.g. from [@userinfobot](https://t.me/userinfobot)), redeploy once, then message `/start` to your bot. See [Telegram without a shell](#telegram-without-a-shell).
+4. **With Railway Shell:** message `/start`, copy the six-digit pairing code, then in **Deploy → Shell** run `mercury telegram approve <code>`.
 
 ### 3. Customize Your Soul
 
@@ -122,6 +115,18 @@ SSH into the Railway shell or edit files in your volume at `/data/mercury/soul/`
 - `persona.md` — communication style
 - `taste.md` — aesthetic preferences
 - `heartbeat.md` — what Mercury checks proactively
+
+---
+
+## Telegram without a shell
+
+Mercury’s first admin is normally approved with `mercury telegram approve` in a terminal. This template adds **`TELEGRAM_BOOTSTRAP_ADMIN_ID`**: set it in Railway to your **numeric Telegram user id** (e.g. from [@userinfobot](https://t.me/userinfobot)). On each container start, a small bootstrap step runs **only while `mercury.yaml` has zero Telegram admins** and writes that user as the first admin (same id is used as `chatId`, which matches private chats with a bot).
+
+The entrypoint also sets **`TELEGRAM_ENABLED=true`** whenever **`TELEGRAM_BOT_TOKEN`** is set, so Telegram actually starts in headless Railway (Mercury’s default would keep Telegram off).
+
+**More users:** no shell — when someone new sends `/start`, existing Telegram admins receive inline **Approve** / **Reject** buttons.
+
+**Security:** anyone who can edit your Railway variables can pick the bootstrap id. Remove `TELEGRAM_BOOTSTRAP_ADMIN_ID` after the first successful pairing if you want to avoid leaving it set.
 
 ---
 
