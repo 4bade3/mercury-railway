@@ -118,6 +118,14 @@ SSH into the Railway shell or edit files in your volume at `/data/mercury/soul/`
 
 ---
 
+## Headless setup (no interactive wizard)
+
+Mercury only skips the setup wizard when **`mercury.yaml` exists** and **`identity.owner`** is non-empty. On a fresh volume that file does not exist, so `mercury start` prints `First run detected` and waits for `Your name:` — which never works on Railway.
+
+This template’s entrypoint runs **`mercury-yaml-seed.mjs`** before starting Mercury: it creates or updates `mercury.yaml` with **`MERCURY_OWNER`** (and **`MERCURY_NAME`** if set) from your environment. Set **`MERCURY_OWNER`** in Railway on every deploy; if the variable is missing, the container exits with an error instead of hanging.
+
+---
+
 ## Telegram without a shell
 
 Mercury’s first admin is normally approved with `mercury telegram approve` in a terminal. This template adds **`TELEGRAM_BOOTSTRAP_ADMIN_ID`**: set it in Railway to your **numeric Telegram user id** (e.g. from [@userinfobot](https://t.me/userinfobot)). On each container start, a small bootstrap step runs **only while `mercury.yaml` has zero Telegram admins** and writes that user as the first admin (same id is used as `chatId`, which matches private chats with a bot).
@@ -155,6 +163,29 @@ This repo is a thin deployment wrapper around the upstream [`cosmicstack-labs/me
 3. Creating required subdirectories on first boot
 
 This means you always get the latest published Mercury version without needing to manually update the repo.
+
+---
+
+## Test locally with Docker
+
+Put the variables you need in a **`.env`** file at the repo root (same names as [Required Environment Variables](#required-environment-variables) and Railway). That file is gitignored — do not commit it.
+
+From the repo root:
+
+```bash
+docker build -t mercury-railway:local .
+mkdir -p ./mercury-local-data
+docker run --rm -it \
+  -v "$(pwd)/mercury-local-data:/data/mercury" \
+  --env-file ./.env \
+  mercury-railway:local
+```
+
+- **`MERCURY_OWNER`** must be set in `.env`; otherwise the entrypoint exits before Mercury starts.
+- **`TELEGRAM_BOOTSTRAP_ADMIN_ID`** in `.env` is optional; omit it if you will pair with `mercury telegram approve` inside the container (second terminal: `docker exec -it <container_id> sh` → `mercury telegram approve <code>`).
+- Mount **`-v ...:/data/mercury`** so `mercury.yaml`, memory, and Telegram state survive between runs (like a Railway volume). Omit the mount for a throwaway run.
+
+Detached run: add **`-d`**, then **`docker logs -f <container_id>`** to follow output.
 
 ---
 

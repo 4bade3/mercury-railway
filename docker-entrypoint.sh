@@ -83,6 +83,9 @@ write_env "MEMORY_DIR"             "${MEMORY_DIR:-/data/mercury/memory}"
 echo "☿  Mercury entrypoint: data dir ready at $MERCURY_DIR"
 echo "☿  Provider: ${DEFAULT_PROVIDER:-anthropic}"
 
+# Mercury requires mercury.yaml + identity.owner or it opens the interactive wizard (hangs without TTY).
+node /opt/mercury-railway-bootstrap/mercury-yaml-seed.mjs
+
 # Optional CLI-less first Telegram admin (numeric user id, e.g. from @userinfobot).
 if [ -n "${TELEGRAM_BOOTSTRAP_ADMIN_ID:-}" ]; then
   node /opt/mercury-railway-bootstrap/telegram-bootstrap.mjs

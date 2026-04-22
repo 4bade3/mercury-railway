@@ -8,7 +8,7 @@ Click **Deploy on Railway** in the README, or go to:
 
 Fill in the variables Railway shows you. At minimum:
 
-- `MERCURY_OWNER` — your name
+- `MERCURY_OWNER` — your name (**required** — without it Mercury opens an interactive setup wizard and the container will sit at `Your name:` with no TTY)
 - `DEFAULT_PROVIDER` — pick `anthropic`, `deepseek`, `openai`, or `grok`
 - The API key for your chosen provider
 - `TELEGRAM_BOT_TOKEN` — get this from [@BotFather](https://t.me/BotFather) on Telegram
@@ -107,6 +107,9 @@ See [README.md](./README.md#required-environment-variables) for the full list.
 
 **Bot doesn't respond**
 → Telegram pairing not done. Do Step 3.
+
+**Logs stuck at `First run detected` / `Your name:`**
+→ Set **`MERCURY_OWNER`** in Railway Variables (required) and redeploy. The container seeds `mercury.yaml` from that value so Mercury never waits for interactive input.
 
 **Token budget exhausted**
 → In Telegram, send `/budget reset` or `/budget set 100000`.
