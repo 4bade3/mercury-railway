@@ -1,0 +1,43 @@
+name: Check Mercury Updates
+
+on:
+  schedule:
+    # Check for new Mercury versions every day at 08:00 UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get latest Mercury version from npm
+        id: npm
+        run: |
+          LATEST=$(npm view @cosmicstack/mercury-agent version)
+          echo "version=$LATEST" >> $GITHUB_OUTPUT
+          echo "Latest Mercury version: $LATEST"
+
+      - name: Read current pinned version
+        id: current
+        run: |
+          CURRENT=$(grep 'MERCURY_VERSION' Dockerfile | grep -oP '(?<=default=)[^\s"]+' || echo "latest")
+          echo "version=$CURRENT" >> $GITHUB_OUTPUT
+          echo "Current pinned version: $CURRENT"
+
+      - name: Create PR if version changed
+        if: steps.npm.outputs.version != steps.current.outputs.version && steps.current.outputs.version != 'latest'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: bump Mercury to v${{ steps.npm.outputs.version }}"
+          title: "⬆️ Bump Mercury Agent to v${{ steps.npm.outputs.version }}"
+          body: |
+            Mercury Agent v${{ steps.npm.outputs.version }} is available on npm.
+
+            This PR updates the pinned version in the Dockerfile.
+
+            - [Changelog](https://github.com/cosmicstack-labs/mercury-agent)
+            - [npm](https://www.npmjs.com/package/@cosmicstack/mercury-agent)
+          branch: "bump/mercury-${{ steps.npm.outputs.version }}"

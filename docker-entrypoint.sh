@@ -1,0 +1,83 @@
+#!/bin/sh
+set -e
+
+MERCURY_DIR="${MERCURY_DATA_DIR:-/data/mercury}"
+HOME_MERCURY="$HOME/.mercury"
+
+# ── Ensure persistent data dir exists ────────────────────
+mkdir -p "$MERCURY_DIR"
+
+# ── Symlink ~/.mercury → /data/mercury ───────────────────
+if [ ! -L "$HOME_MERCURY" ]; then
+  if [ -d "$HOME_MERCURY" ]; then
+    # Merge existing dir into persistent volume, then replace with symlink
+    cp -rn "$HOME_MERCURY/." "$MERCURY_DIR/" 2>/dev/null || true
+    rm -rf "$HOME_MERCURY"
+  fi
+  ln -s "$MERCURY_DIR" "$HOME_MERCURY"
+fi
+
+# ── Sub-directories Mercury expects ──────────────────────
+mkdir -p \
+  "$MERCURY_DIR/soul" \
+  "$MERCURY_DIR/memory" \
+  "$MERCURY_DIR/skills"
+
+# ── Seed .env from Railway environment variables ─────────
+# Mercury reads ~/.mercury/.env at startup.
+# We write it fresh on every container start so Railway vars always win.
+ENV_FILE="$MERCURY_DIR/.env"
+
+write_env() {
+  local key="$1"
+  local val="$2"
+  if [ -n "$val" ]; then
+    # Remove existing line for this key, then append
+    if [ -f "$ENV_FILE" ]; then
+      grep -v "^${key}=" "$ENV_FILE" > "${ENV_FILE}.tmp" && mv "${ENV_FILE}.tmp" "$ENV_FILE" || true
+    fi
+    echo "${key}=${val}" >> "$ENV_FILE"
+  fi
+}
+
+touch "$ENV_FILE"
+
+write_env "MERCURY_NAME"           "${MERCURY_NAME:-Mercury}"
+write_env "MERCURY_OWNER"          "${MERCURY_OWNER:-}"
+write_env "DEFAULT_PROVIDER"       "${DEFAULT_PROVIDER:-anthropic}"
+
+write_env "ANTHROPIC_API_KEY"      "${ANTHROPIC_API_KEY:-}"
+write_env "ANTHROPIC_MODEL"        "${ANTHROPIC_MODEL:-claude-sonnet-4-20250514}"
+
+write_env "OPENAI_API_KEY"         "${OPENAI_API_KEY:-}"
+write_env "OPENAI_BASE_URL"        "${OPENAI_BASE_URL:-https://api.openai.com/v1}"
+write_env "OPENAI_MODEL"           "${OPENAI_MODEL:-gpt-4o-mini}"
+
+write_env "DEEPSEEK_API_KEY"       "${DEEPSEEK_API_KEY:-}"
+write_env "DEEPSEEK_BASE_URL"      "${DEEPSEEK_BASE_URL:-https://api.deepseek.com/v1}"
+write_env "DEEPSEEK_MODEL"         "${DEEPSEEK_MODEL:-deepseek-chat}"
+
+write_env "GROK_API_KEY"           "${GROK_API_KEY:-}"
+write_env "GROK_BASE_URL"          "${GROK_BASE_URL:-https://api.x.ai/v1}"
+write_env "GROK_MODEL"             "${GROK_MODEL:-grok-4}"
+
+write_env "OLLAMA_LOCAL_ENABLED"   "${OLLAMA_LOCAL_ENABLED:-false}"
+
+write_env "TELEGRAM_BOT_TOKEN"     "${TELEGRAM_BOT_TOKEN:-}"
+
+write_env "DAILY_TOKEN_BUDGET"     "${DAILY_TOKEN_BUDGET:-50000}"
+write_env "HEARTBEAT_INTERVAL_MINUTES" "${HEARTBEAT_INTERVAL_MINUTES:-60}"
+
+write_env "GITHUB_TOKEN"           "${GITHUB_TOKEN:-}"
+write_env "GITHUB_USERNAME"        "${GITHUB_USERNAME:-}"
+write_env "GITHUB_EMAIL"           "${GITHUB_EMAIL:-}"
+write_env "GITHUB_DEFAULT_OWNER"   "${GITHUB_DEFAULT_OWNER:-}"
+write_env "GITHUB_DEFAULT_REPO"    "${GITHUB_DEFAULT_REPO:-}"
+
+write_env "MEMORY_DIR"             "${MEMORY_DIR:-/data/mercury/memory}"
+
+echo "☿  Mercury entrypoint: data dir ready at $MERCURY_DIR"
+echo "☿  Provider: ${DEFAULT_PROVIDER:-anthropic}"
+echo "☿  Starting agent..."
+
+exec "$@"

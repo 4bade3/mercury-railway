@@ -1,0 +1,22 @@
+{
+  "name": "mercury-agent-railway",
+  "version": "1.0.0",
+  "description": "Railway template for Mercury — soul-driven AI agent with 31 tools, Telegram access, skill system, and 24/7 daemon mode.",
+  "private": true,
+  "scripts": {
+    "start": "echo 'Deploy via Railway. See README.md'"
+  },
+  "keywords": [
+    "mercury",
+    "ai-agent",
+    "railway",
+    "telegram",
+    "cosmicstack"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_USERNAME/mercury-agent-railway.git"
+  },
+  "homepage": "https://mercury.cosmicstack.org"
+}
