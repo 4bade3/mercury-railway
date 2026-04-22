@@ -5,7 +5,7 @@
 Click **Deploy on Railway** in the README, or go to:
 
 ```
-https://railway.com/new/template?template=https://github.com/YOUR_USERNAME/mercury-agent-railway
+https://railway.com/new/template?template=https://github.com/4bade3/mercury-railway
 ```
 
 Fill in the variables Railway shows you. At minimum:

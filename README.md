@@ -2,7 +2,7 @@
 
 > Soul-driven AI agent with 31 built-in tools, Telegram access, skill system, and 24/7 daemon mode. One-click deploy on Railway.
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https://github.com/4bade3/mercury-agent-railway)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https://github.com/4bade3/mercury-railway)
 
 ---
 
@@ -26,7 +26,7 @@ This template deploys Mercury as a Railway worker service backed by a persistent
 Click the button above, or use this URL:
 
 ```
-https://railway.com/new/template?template=https://github.com/4bade3/mercury-agent-railway
+https://railway.com/new/template?template=https://github.com/4bade3/mercury-railway
 ```
 
 Railway will prompt you to fill in the required environment variables before deploying.
