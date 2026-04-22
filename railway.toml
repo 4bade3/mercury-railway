@@ -3,6 +3,8 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "mercury start"
+# Do not set startCommand here. The Dockerfile ENTRYPOINT must run first (symlink
+# ~/.mercury → volume, seed .env, mercury-yaml-seed, telegram-bootstrap) before
+# `mercury start`. Overriding the start command can skip the entrypoint entirely.
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10

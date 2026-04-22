@@ -111,6 +111,9 @@ See [README.md](./README.md#required-environment-variables) for the full list.
 **Logs stuck at `First run detected` / `Your name:`**
 → Set **`MERCURY_OWNER`** in Railway Variables (required) and redeploy. The container seeds `mercury.yaml` from that value so Mercury never waits for interactive input.
 
+**Logs never show `☿ Mercury entrypoint` and setup wizard still appears**
+→ The container is probably starting **`mercury` without the Docker entrypoint** (no symlink to the volume, no `.env` seeding, no `mercury.yaml` bootstrap). In Railway: service **Settings → Deploy → Custom Start Command** must be **empty**. Redeploy after pulling a template that does **not** set `startCommand` in `railway.toml` (that field skips the image `ENTRYPOINT`).
+
 **Token budget exhausted**
 → In Telegram, send `/budget reset` or `/budget set 100000`.
 

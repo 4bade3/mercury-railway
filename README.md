@@ -164,6 +164,8 @@ This repo is a thin deployment wrapper around the upstream [`cosmicstack-labs/me
 
 This means you always get the latest published Mercury version without needing to manually update the repo.
 
+**Railway:** do not set a **custom start command** that runs `mercury start` alone — that bypasses the image `ENTRYPOINT` (`docker-entrypoint.sh`), so the volume symlink, `.env` seeding, and YAML/Telegram bootstrap never run. Leave the deploy start command empty and use the Dockerfile `CMD` (see `railway.toml`).
+
 ---
 
 ## Test locally with Docker
