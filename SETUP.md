@@ -4,9 +4,7 @@
 
 Click **Deploy on Railway** in the README, or go to:
 
-```
-https://railway.com/new/template?template=https://github.com/4bade3/mercury-railway
-```
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/kJGxP-?referralCode=u71AUL&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 Fill in the variables Railway shows you. At minimum:
 

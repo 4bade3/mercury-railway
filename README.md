@@ -2,7 +2,7 @@
 
 > Soul-driven AI agent with 31 built-in tools, Telegram access, skill system, and 24/7 daemon mode. One-click deploy on Railway.
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https://github.com/4bade3/mercury-railway)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/kJGxP-?referralCode=u71AUL&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 ---
 
