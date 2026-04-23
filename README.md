@@ -71,6 +71,13 @@ If **both are unset**, the globally installed version from the image (last `dock
 | `GITHUB_DEFAULT_OWNER` | — | Default repo owner |
 | `GITHUB_DEFAULT_REPO` | — | Default repo name |
 | `TELEGRAM_BOOTSTRAP_ADMIN_ID` | — | **CLI-less pairing:** your numeric Telegram user id; seeds the first admin on boot when `mercury.yaml` has no Telegram admins yet ([details below](#telegram-without-a-shell)) |
+| `MERCURY_YAML_PREFER_DISK` | — | If `true`, skip **`mercury-yaml-reconcile-env.mjs`** so `mercury.yaml` on the volume keeps overriding env (advanced; not recommended on Railway). |
+
+### Why changing Railway variables sometimes did nothing
+
+Mercury loads config as **`defaults from env` merged under `mercury.yaml` on disk`**. Anything Mercury (or `mercury doctor`) has **written into `mercury.yaml`**—provider keys, models, Telegram token, token budget, etc.—**wins over** later Railway changes.
+
+On every boot this template runs **`mercury-yaml-reconcile-env.mjs`** after the identity seed: it removes those overlays (`providers`, Telegram token/enabled/streaming, `github`, `memory`, `tokens`, `heartbeat`) and refreshes **`identity.owner` / `identity.name`** from `MERCURY_OWNER` / `MERCURY_NAME`, while **keeping** Telegram `admins` / `members` / `pending` so pairing is not lost.
 
 ---
 
@@ -82,7 +89,8 @@ Railway Service (Worker — no HTTP)
 ├── Dockerfile (Node 20 Alpine, multi-stage)
 ├── docker-entrypoint.sh
 │   ├── Symlinks ~/.mercury → /data/mercury (Volume)
-│   └── Seeds ~/.mercury/.env from Railway env vars
+│   ├── Seeds ~/.mercury/.env from Railway env vars
+│   └── Reconciles mercury.yaml so env vars are not overridden by stale yaml
 │
 └── Mercury Agent (dist/index.js start)
     ├── Telegram bot (long polling via grammY)
@@ -171,7 +179,8 @@ This repo is a thin deployment wrapper around the upstream [`cosmicstack-labs/me
 
 1. Symlinking `~/.mercury` to the Railway Volume at `/data/mercury`
 2. Writing a fresh `~/.mercury/.env` from Railway environment variables on every start
-3. Creating required subdirectories on first boot
+3. Reconciling `mercury.yaml` so volume state does not override those env vars ([see above](#why-changing-railway-variables-sometimes-did-nothing))
+4. Creating required subdirectories on first boot
 
 This means you always get the latest published Mercury version without needing to manually update the repo.
 

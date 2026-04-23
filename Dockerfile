@@ -6,7 +6,7 @@ FROM node:20-alpine
 
 WORKDIR /opt/mercury-railway-bootstrap
 COPY scripts/package.json package.json
-COPY scripts/mercury-yaml-seed.mjs scripts/telegram-bootstrap.mjs ./
+COPY scripts/mercury-yaml-seed.mjs scripts/mercury-yaml-reconcile-env.mjs scripts/telegram-bootstrap.mjs ./
 RUN npm install --omit=dev
 
 WORKDIR /app

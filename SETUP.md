@@ -95,6 +95,8 @@ All variables can be updated in Railway → your service → **Variables** tab. 
 
 To **pin the Mercury CLI/npm package** without changing the repo Dockerfile, set **`MERCURY_AGENT_VERSION`** (or **`MERCURY_VERSION`**) to an npm version such as `0.5.2`; the entrypoint installs that release before `mercury start` (needs network on boot).
 
+**Railway Variables ignored / “stuck” on first values:** Mercury merges **`mercury.yaml` over env**. This template strips stale yaml overlays on each boot (`mercury-yaml-reconcile-env.mjs`). If you disabled that with **`MERCURY_YAML_PREFER_DISK=true`**, remove it or edit `/data/mercury/mercury.yaml` yourself.
+
 See [README.md](./README.md#required-environment-variables) for the full list.
 
 ---

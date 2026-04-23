@@ -86,6 +86,10 @@ echo "☿  Provider: ${DEFAULT_PROVIDER:-anthropic}"
 # Mercury requires mercury.yaml + identity.owner or it opens the interactive wizard (hangs without TTY).
 node /opt/mercury-railway-bootstrap/mercury-yaml-seed.mjs
 
+# Mercury merges mercury.yaml ON TOP OF env defaults — old yaml keeps first-run API keys, models,
+# Telegram token, etc. Strip those overlays each boot so Railway Variables stay authoritative.
+node /opt/mercury-railway-bootstrap/mercury-yaml-reconcile-env.mjs
+
 # Optional CLI-less first Telegram admin (numeric user id, e.g. from @userinfobot).
 if [ -n "${TELEGRAM_BOOTSTRAP_ADMIN_ID:-}" ]; then
   node /opt/mercury-railway-bootstrap/telegram-bootstrap.mjs
