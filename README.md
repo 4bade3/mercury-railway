@@ -43,6 +43,17 @@ Railway will prompt you to fill in the required environment variables before dep
 | `ANTHROPIC_API_KEY` | Your Anthropic API key (if using Anthropic) |
 | `TELEGRAM_BOT_TOKEN` | Bot token from [@BotFather](https://t.me/BotFather) — required for headless use |
 
+## Pinning the Mercury npm package (recommended on Railway)
+
+The Docker image installs `@cosmicstack/mercury-agent` at **build** time (`Dockerfile` `ARG MERCURY_VERSION`, default `latest`). To pin **without** rebuilding from git, set a Railway **Variable** (runtime env):
+
+| Variable | Description |
+|---|---|
+| **`MERCURY_AGENT_VERSION`** | npm dist-tag or semver, e.g. `0.5.2`, `0.5.4`, or `latest`. On each container start the entrypoint runs `npm install -g @cosmicstack/mercury-agent@<value>` before `mercury start`. Requires outbound network on boot. |
+| **`MERCURY_VERSION`** | Alias for `MERCURY_AGENT_VERSION` if the latter is unset. |
+
+If **both are unset**, the globally installed version from the image (last `docker build`) is used—no extra install on start.
+
 ## Optional Environment Variables
 
 | Variable | Default | Description |
@@ -193,7 +204,8 @@ Detached run: add **`-d`**, then **`docker logs -f <container_id>`** to follow o
 
 ## Updating Mercury
 
-Mercury is installed from npm at build time (`npm i -g @cosmicstack/mercury-agent`). To get a newer version, trigger a redeploy in Railway (or pin a version in the Dockerfile if you need stability).
+- **Pinned in Railway:** set `MERCURY_AGENT_VERSION` (e.g. bump `0.5.2` → `0.5.4`) and redeploy; the entrypoint installs that release on container start.
+- **Image default only:** leave `MERCURY_AGENT_VERSION` / `MERCURY_VERSION` unset; change the baked version by editing the Dockerfile `ARG MERCURY_VERSION` and rebuilding, or trigger a Railway rebuild to refresh `latest` at build time.
 
 ---
 

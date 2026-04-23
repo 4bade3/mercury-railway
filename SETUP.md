@@ -93,6 +93,8 @@ Or use a tool like [scp](https://linux.die.net/man/1/scp) or Railway's volume ed
 
 All variables can be updated in Railway → your service → **Variables** tab. Mercury re-reads them on the next redeploy (the entrypoint script seeds `~/.mercury/.env` fresh on every container start).
 
+To **pin the Mercury CLI/npm package** without changing the repo Dockerfile, set **`MERCURY_AGENT_VERSION`** (or **`MERCURY_VERSION`**) to an npm version such as `0.5.2`; the entrypoint installs that release before `mercury start` (needs network on boot).
+
 See [README.md](./README.md#required-environment-variables) for the full list.
 
 ---

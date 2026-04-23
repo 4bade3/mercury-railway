@@ -91,6 +91,15 @@ if [ -n "${TELEGRAM_BOOTSTRAP_ADMIN_ID:-}" ]; then
   node /opt/mercury-railway-bootstrap/telegram-bootstrap.mjs
 fi
 
+# Optional: pin @cosmicstack/mercury-agent from Railway Variables (runtime, needs npm registry).
+# MERCURY_AGENT_VERSION wins; MERCURY_VERSION is an alias. Examples: 0.5.2 | latest
+# Leave both unset to use whatever the image installed at build time (Dockerfile ARG MERCURY_VERSION).
+MERCURY_PIN="${MERCURY_AGENT_VERSION:-${MERCURY_VERSION:-}}"
+if [ -n "$MERCURY_PIN" ]; then
+  echo "☿  Installing @cosmicstack/mercury-agent@${MERCURY_PIN} (runtime pin from env)..."
+  npm install -g --omit=dev "@cosmicstack/mercury-agent@${MERCURY_PIN}"
+fi
+
 echo "☿  Starting agent..."
 
 exec "$@"

@@ -11,10 +11,9 @@ RUN npm install --omit=dev
 
 WORKDIR /app
 
-# Pin a specific version for reproducibility, or use "latest"
+# Default npm version baked into the image. Override at **runtime** with Railway Variables
+# MERCURY_AGENT_VERSION or MERCURY_VERSION (see docker-entrypoint.sh), or pass --build-arg at build.
 ARG MERCURY_VERSION=latest
-
-# Install Mercury globally from npm
 RUN npm install -g @cosmicstack/mercury-agent@${MERCURY_VERSION}
 
 # Mercury data dir — mount a Railway Volume at /data
