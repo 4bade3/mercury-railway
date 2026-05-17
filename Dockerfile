@@ -26,8 +26,20 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Start Mercury attached to the container (Railway needs PID 1 to stay alive and
-# stream stdout/stderr). Without --foreground, `mercury start` daemonizes itself
-# (spawns a detached child writing to ~/.mercury/daemon.log and exits the parent),
-# which kills the Railway container and hides all logs.
-CMD ["mercury", "start", "--foreground"]
+# Start Mercury attached to the container so Railway can keep PID 1 alive and
+# stream stdout/stderr.
+#   - `mercury start` (default)    → forks a detached daemon and exits the parent
+#                                    (Railway sees PID 1 die → container restarts;
+#                                    daemon logs go to ~/.mercury/daemon.log,
+#                                    which is invisible to Railway).
+#   - `mercury start --foreground` → starts the Ink/React TUI, which calls
+#                                    setRawMode() on stdin and crashes with
+#                                    "Raw mode is not supported" on a Railway
+#                                    worker (no TTY).
+#   - `mercury start --daemon`     → runs the agent in the CURRENT process with
+#                                    a watchdog, no TUI, pino logs to stderr.
+#                                    Despite the "internal" label in --help,
+#                                    this is the correct headless mode.
+# Verbose is required because pino defaults to `silent` unless LOG_LEVEL is set.
+ENV LOG_LEVEL=info
+CMD ["mercury", "start", "--daemon"]
