@@ -26,5 +26,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Start Mercury in foreground (Railway keeps the container alive)
-CMD ["mercury", "start"]
+# Start Mercury attached to the container (Railway needs PID 1 to stay alive and
+# stream stdout/stderr). Without --foreground, `mercury start` daemonizes itself
+# (spawns a detached child writing to ~/.mercury/daemon.log and exits the parent),
+# which kills the Railway container and hides all logs.
+CMD ["mercury", "start", "--foreground"]
